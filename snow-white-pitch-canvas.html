@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNOW WHITE — Sephora SEA · Hackathon 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400;1,9..144,700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ─── TOKENS ──────────────────────────────────────── */
+:root {
+  --paper:    #F9F7F2;
+  --ink:      #1A1A1A;
+  --ink-2:    #3D3D3D;
+  --ink-3:    #888880;
+  --terra:    #D15F41;
+  --terra-10: rgba(209,95,65,0.10);
+  --terra-20: rgba(209,95,65,0.20);
+  --line:     rgba(26,26,26,0.10);
+  --line-mid: rgba(26,26,26,0.20);
+  --mh:       max(72px, 8vw);
+  --nav-h:    58px;
+  --serif:    'Fraunces', Georgia, serif;
+  --sans:     'Space Grotesk', system-ui, sans-serif;
+  --mono:     'Courier New', monospace;
+}
+
+/* ─── RESET ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SLIDER SHELL ────────────────────────────────── */
+.slider-outer {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  bottom: var(--nav-h);
+  overflow: hidden;
+}
+
+.slider-track {
+  display: flex;
+  width: 500%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* ─── INDIVIDUAL SLIDES ───────────────────────────── */
+.slide {
+  width: 20%; /* 100% / 5 slides */
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 56px var(--mh) 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Subtle baseline rhythm */
+.slide::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0, transparent 31px,
+    rgba(26,26,26,0.016) 32px, rgba(26,26,26,0.016) 32px
+  );
+  pointer-events: none; z-index: 0;
+}
+
+.slide > * { position: relative; z-index: 1; }
+
+/* ─── NAV BAR ─────────────────────────────────────── */
+.slider-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(249,247,242,0.88);
+  backdrop-filter: blur(40px) saturate(160%);
+  -webkit-backdrop-filter: blur(40px) saturate(160%);
+  border-top: 0.5px solid var(--line-mid);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--mh);
+  z-index: 200;
+}
+
+.snav-btn {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 0.5px solid var(--line-mid);
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background 0.16s, color 0.16s;
+  user-select: none;
+}
+
+.snav-btn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.snav-btn:disabled {
+  color: var(--ink-3);
+  border-color: var(--line);
+  cursor: default;
+}
+
+.snav-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.snav-dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.snav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--line-mid);
+  transition: background 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+
+.snav-dot.active {
+  background: var(--terra);
+  transform: scale(1.4);
+}
+
+.snav-count {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.12em;
+}
+
+/* ─── SHARED TYPOGRAPHY ───────────────────────────── */
+.slide-meta {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 40px;
+}
+
+.slide-label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.slide-label::after { content: ''; flex:1; height:0.5px; background:var(--line-mid); }
+
+.h-rule { width:100%; height:0.5px; background:var(--line-mid); }
+.h-rule-light { width:100%; height:0.5px; background:var(--line); }
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 1 — THE PROBLEM
+═══════════════════════════════════════════════════ */
+#s1 { justify-content: flex-start; padding-top: 52px; }
+
+/* Two-column hero: title left, image right */
+.s1-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 56px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.s1-hero-left { min-width: 0; }
+
+.s1-hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.s1-img {
+  max-height: 50vh;
+  max-width: 38vw;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.s1-title {
+  font-family: var(--serif);
+  font-size: clamp(48px, 7vw, 104px);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  margin-bottom: 32px;
+}
+
+.s1-title span { display: block; }
+
+.s1-rule-wrap { margin-bottom: 40px; }
+
+.s1-problems {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.s1-problem {
+  padding-right: 52px;
+  border-right: 0.5px solid var(--line-mid);
+}
+
+.s1-problem:last-child {
+  border-right: none;
+  padding-right: 0;
+  padding-left: 52px;
+}
+
+.s1-p-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.s1-p-num::after { content:''; flex:1; height:0.5px; background:var(--line); }
+
+.s1-p-quote {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.5vw, 22px);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
+  font-optical-sizing: auto;
+}
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 2 — WHY SEPHORA
+═══════════════════════════════════════════════════ */
+#s2 { justify-content: flex-start; padding-top: 52px; }
+
+.s2-headline {
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.8vw, 58px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  max-width: 780px;
+  margin-bottom: 64px;
+}
+
+.s2-headline em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--terra);
+}
+
+.s2-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 0.5px solid var(--line-mid);
+}
+
+.s2-pillar {
+  padding: 40px 48px 40px 0;
+  border-right: 0.5px solid var(--line);
+}
+
+.s2-pillar:last-child { border-right: none; padding-right: 0; }
+.s2-pillar:not(:first-child) { padding-left: 48px; }
+
+.s2-p-idx {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+}
+
+.s2-p-icon { margin-bottom: 20px; }
+
+.s2-p-title {
+  font-family: var(--serif);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 14px;
+  font-optical-sizing: auto;
+}
+
+.s2-p-body {
+  font-family: var(--sans);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 300;
+  color: var(--ink-2);
+  line-height: 1.72;
+  margin-bottom: 20px;
+}
+
+.s2-p-stat {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.2vw, 32px);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+  font-optical-sizing: auto;
+}
+
+.s2-p-stat-note {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 3 — DEMO JOURNEY
+═══════════════════════════════════════════════════ */
+#s3 { justify-content: flex-start; padding-top: 52px; }
+
+.s3-headline {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.2vw, 50px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  margin-bottom: 8px;
+}
+
+.s3-sub {
+  font-family: var(--serif);
+  font-size: clamp(14px, 1.3vw, 18px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-3);
+  margin-bottom: 52px;
+  font-optical-sizing: auto;
+}
+
+/* Journey flow: connecting timeline */
+.journey-flow {
+  position: relative;
+}
+
+.journey-line-h {
+  position: absolute;
+  top: 19px; /* centre of the dots */
+  left: 0; right: 0;
+  height: 0.5px;
+  background: var(--line-mid);
+  z-index: 0;
+}
+
+.journey-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.j-step {
+  padding-right: 36px;
+}
+
+.j-step:last-child { padding-right: 0; }
+.j-step:not(:first-child) { padding-left: 0; }
+
+.j-dot-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 20px;
+  height: 38px;
+}
+
+.j-dot {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 0.5px solid var(--line-mid);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.j-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--terra);
+  letter-spacing: 0.04em;
+}
+
+.j-arrow {
+  flex: 1;
+  height: 0.5px;
+  background: var(--line-mid);
+}
+
+.j-title {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.5vw, 21px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 12px;
+  font-optical-sizing: auto;
+}
+
+.j-desc {
+  font-family: var(--sans);
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 300;
+  color: var(--ink-2);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.j-signal {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--terra);
+  letter-spacing: 0.06em;
+  border: 0.5px solid var(--terra-20);
+  display: inline-block;
+  padding: 3px 10px;
+}
+
+/* Phone wireframe for slide 3 */
+.s3-bottom {
+  margin-top: 44px;
+  border-top: 0.5px solid var(--line);
+  padding-top: 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.s3-wire-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.s3-wire-frame {
+  border: 0.5px solid var(--line-mid);
+  padding: 16px;
+  max-width: 320px;
+}
+
+.wire-row {
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--line);
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.wire-row:last-child { border-bottom: none; }
+
+.wire-tag {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--terra);
+  letter-spacing: 0.06em;
+  border: 0.5px solid var(--terra-20);
+  padding: 2px 8px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.s3-notes {
+  font-family: var(--serif);
+  font-size: clamp(13px, 1.2vw, 16px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-2);
+  line-height: 1.72;
+}
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 4 — SENSE / THINK / ACT
+═══════════════════════════════════════════════════ */
+#s4 { justify-content: flex-start; padding-top: 52px; }
+
+.s4-headline {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.5vw, 54px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  margin-bottom: 8px;
+}
+
+.s4-sub {
+  font-family: var(--serif);
+  font-size: clamp(13px, 1.2vw, 17px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-3);
+  margin-bottom: 52px;
+  font-optical-sizing: auto;
+}
+
+.sta-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  border-top: 0.5px solid var(--line-mid);
+}
+
+.sta-connector {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 52px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.sta-arrow-symbol {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--line-mid);
+  user-select: none;
+}
+
+.sta-col {
+  padding: 32px 40px 32px 0;
+}
+
+.sta-col:not(:first-child) { padding-left: 0; }
+.sta-col:last-child { padding-right: 0; }
+
+.sta-col-head {
+  margin-bottom: 24px;
+}
+
+.sta-col-name {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.4vw, 36px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.sta-col-role {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+}
+
+.sta-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sta-dash {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--line-mid);
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.sta-item-text {
+  font-family: var(--sans);
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 400;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
+.sta-item-text strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Highlighted items */
+.sta-item.hl .sta-dash      { color: var(--terra); }
+.sta-item.hl .sta-item-text { color: var(--ink); font-weight: 600; }
+
+/* Act column expands section */
+.sta-expands {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 0.5px solid var(--line);
+}
+
+.sta-expands-label {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--terra);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.sta-expand-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sta-etag {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-2);
+  letter-spacing: 0.05em;
+  border: 0.5px solid var(--line);
+  padding: 5px 10px;
+}
+
+.sta-etag.future {
+  color: var(--terra);
+  border-color: var(--terra-20);
+}
+
+/* ─── ON-TRIGGER ROUTING (Slide 4 addition) ───────── */
+.routing-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 0.5px solid var(--line-mid);
+}
+
+.routing-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.routing-label::after { content:''; flex:1; height:0.5px; background:var(--line); }
+
+.routing-grid {
+  display: grid;
+  grid-template-columns: 1fr 24px 160px 24px 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.r-col-name {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 0.5px solid var(--line);
+}
+
+.r-trigger-list { display: flex; flex-direction: column; gap: 5px; }
+
+.r-trigger {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+
+.r-tag {
+  font-size: 7.5px;
+  color: var(--ink-3);
+  border: 0.5px solid var(--line);
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.r-connector {
+  display: flex; align-items: center; justify-content: center;
+  padding-top: 28px;
+  color: var(--line-mid);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.r-router-box {
+  border: 0.5px solid var(--line-mid);
+  padding: 12px 14px;
+}
+
+.r-router-head {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--terra);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.r-router-criteria {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.03em;
+  line-height: 1.9;
+}
+
+.r-tier-list { display: flex; flex-direction: column; gap: 0; }
+
+.r-tier-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 0.5px solid var(--line);
+  align-items: start;
+}
+.r-tier-row:last-child { border-bottom: none; }
+
+.tier-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 0;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+.tier-badge.a { background: var(--ink); color: var(--paper); }
+.tier-badge.b { border: 0.5px solid var(--line-mid); color: var(--ink); }
+.tier-badge.c { border: 0.5px solid var(--terra-20); color: var(--terra); }
+
+.r-tier-model { font-family:var(--mono); font-size:9.5px; color:var(--ink); letter-spacing:0.03em; margin-bottom:2px; }
+.r-tier-use   { font-family:var(--sans);  font-size:10px;  font-weight:300; color:var(--ink-3); line-height:1.4; }
+.r-tier-vol   { font-family:var(--mono);  font-size:8.5px; color:var(--ink-3); text-align:right; white-space:nowrap; padding-top:2px; }
+.r-tier-price { font-family:var(--mono);  font-size:8px;   color:var(--terra); white-space:nowrap; text-align:right; margin-top:2px; }
+
+/* ─── GEMINI COST MODEL (Slide 5 right col) ───────── */
+.cost-tier-rows { display:flex; flex-direction:column; margin-bottom:16px; }
+
+.cost-tier-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--line);
+  align-items: center;
+}
+.cost-tier-row:last-child { border-bottom: none; }
+.ctr-badge { font-family:var(--mono); font-size:8.5px; font-weight:700; padding:2px 5px; text-align:center; }
+.ctr-badge.a { background:var(--ink); color:var(--paper); }
+.ctr-badge.b { border:0.5px solid var(--line-mid); color:var(--ink); }
+.ctr-badge.c { border:0.5px solid var(--terra-20); color:var(--terra); }
+.ctr-model  { font-family:var(--mono); font-size:9px; color:var(--ink); margin-bottom:1px; }
+.ctr-use    { font-family:var(--sans);  font-size:10px; font-weight:300; color:var(--ink-3); }
+.ctr-vol    { font-family:var(--mono); font-size:8.5px; color:var(--ink-3); text-align:right; white-space:nowrap; }
+.ctr-price  { font-family:var(--mono); font-size:8.5px; color:var(--terra); text-align:right; white-space:nowrap; }
+
+.cost-yr-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  border: 0.5px solid var(--line);
+  margin-bottom: 12px;
+}
+.cost-yr-col { padding:12px; border-right:0.5px solid var(--line); }
+.cost-yr-col:last-child { border-right:none; }
+.cost-yr-label { font-family:var(--mono); font-size:7.5px; color:var(--terra); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:5px; }
+.cost-yr-fig   { font-family:var(--serif); font-size:clamp(16px,1.8vw,24px); font-weight:700; color:var(--ink); letter-spacing:-0.03em; font-variant-numeric:tabular-nums; font-optical-sizing:auto; margin-bottom:3px; }
+.cost-yr-note  { font-family:var(--mono); font-size:8px; color:var(--ink-3); letter-spacing:0.03em; line-height:1.55; }
+
+.cost-vs-note { font-family:var(--sans); font-size:11px; font-weight:300; color:var(--ink-3); line-height:1.65; }
+.cost-vs-note strong { font-weight:600; color:var(--ink); }
+
+/* ═══════════════════════════════════════════════════
+   SLIDE 5 — IMPACT
+═══════════════════════════════════════════════════ */
+#s5 { justify-content: flex-start; padding-top: 52px; }
+
+.s5-headline {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.5vw, 54px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  margin-bottom: 8px;
+}
+
+.s5-sub {
+  font-family: var(--serif);
+  font-size: clamp(13px, 1.2vw, 17px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-3);
+  margin-bottom: 44px;
+}
+
+.s5-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 0.5px solid var(--line-mid);
+}
+
+.s5-left {
+  padding-right: 52px;
+  border-right: 0.5px solid var(--line-mid);
+  padding-top: 36px;
+}
+
+.s5-right {
+  padding-left: 52px;
+  padding-top: 36px;
+}
+
+/* Revenue numbers */
+.rev-nums {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.rev-num-block {
+  padding: 20px 20px 20px 0;
+  border-right: 0.5px solid var(--line);
+  border-bottom: 0.5px solid var(--line);
+}
+
+.rev-num-block:nth-child(2n) { padding-right: 0; padding-left: 20px; border-right: none; }
+.rev-num-block:nth-child(n+3) { border-bottom: none; }
+
+.rn-label {
+  font-family: var(--sans);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+
+.rn-fig {
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.8vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-optical-sizing: auto;
+  margin-bottom: 6px;
+}
+
+.rn-fig.terra { color: var(--terra); }
+
+.rn-note {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+/* Year-by-year strip */
+.yr-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 0.5px solid var(--line);
+  padding-top: 20px;
+}
+
+.yr-block { padding-right: 16px; border-right: 0.5px solid var(--line); }
+.yr-block:not(:first-child) { padding-left: 16px; }
+.yr-block:last-child { border-right: none; padding-right: 0; }
+
+.yr-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--terra);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.yr-fig {
+  font-family: var(--serif);
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  font-optical-sizing: auto;
+  margin-bottom: 4px;
+}
+
+.yr-note {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+/* CLV bars (right col) */
+.clv-title {
+  font-family: var(--sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clv-title::after { content:''; flex:1; height:0.5px; background:var(--line); }
+
+.arpu-bars { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+
+.arpu-row { display: flex; align-items: center; gap: 12px; }
+
+.arpu-period {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.arpu-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(26,26,26,0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.arpu-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.8s ease;
+}
+
+.arpu-fill.hi { background: var(--terra); }
+
+.arpu-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  width: 44px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.arpu-delta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--terra);
+  letter-spacing: 0.04em;
+  width: 44px;
+  flex-shrink: 0;
+}
+
+/* Cost & scale notes */
+.s5-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 0.5px solid var(--line);
+  padding-top: 20px;
+  margin-top: 4px;
+}
+
+.s5-note-block {
+  padding-right: 24px;
+  border-right: 0.5px solid var(--line);
+}
+
+.s5-note-block:last-child { padding-right: 0; padding-left: 24px; border-right: none; }
+
+.s5-note-head {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: var(--terra);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.s5-note-body {
+  font-family: var(--sans);
+  font-size: clamp(11px, 0.95vw, 13px);
+  font-weight: 300;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+
+.s5-note-body strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+</style>
+</head>
+
+<body>
+
+<div class="slider-outer" id="slider-outer">
+  <div class="slider-track" id="track">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 1 — THE PROBLEM
+    ════════════════════════════════════════════ -->
+    <section class="slide" id="s1" data-idx="0" role="region" aria-label="The Problem">
+
+      <div class="s1-hero">
+
+        <div class="s1-hero-left">
+          <p class="slide-meta">// sephora_sea · innovation_sprint · hackathon_2026</p>
+          <h1 class="s1-title">
+            <span>Why does</span>
+            <span>my Mirror</span>
+            <span>Lie?</span>
+          </h1>
+          <div class="s1-rule-wrap"><div class="h-rule"></div></div>
+        </div>
+
+        <div class="s1-hero-right">
+          <img
+            src="snowwhite.png"
+            class="s1-img"
+            alt="Snow White — Sephora SEA"
+            onerror="this.style.display='none'"
+          />
+        </div>
+
+      </div>
+
+      <div class="s1-problems">
+
+        <div class="s1-problem">
+          <div class="s1-p-num">problem_01</div>
+          <blockquote class="s1-p-quote">
+            SEA customers worries about Beauty Routines daily, but they only turn to Sephora when they are ready to check out.
+          </blockquote>
+        </div>
+
+        <div class="s1-problem">
+          <div class="s1-p-num">problem_02</div>
+          <blockquote class="s1-p-quote">
+            Online beauty recommendations lack real-time guidance—ignoring daily context like weather and occasions.
+          </blockquote>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 2 — WHY SEPHORA
+    ════════════════════════════════════════════ -->
+    <section class="slide" id="s2" data-idx="1" role="region" aria-label="Why Sephora">
+
+      <div class="slide-label">// 01 &mdash; Why Sephora</div>
+
+      <h2 class="s2-headline">Sephora is <em>uniquely positioned</em><br>to solve this.</h2>
+
+      <div class="s2-pillars">
+
+        <!-- Pillar 1 -->
+        <div class="s2-pillar">
+          <div class="s2-p-idx">// 01</div>
+          <div class="s2-p-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <ellipse cx="16" cy="14" rx="8" ry="9" stroke="var(--ink)" stroke-width="0.5"/>
+              <path d="M16 23v5M12 28h8" stroke="var(--ink)" stroke-width="0.5" stroke-linecap="round"/>
+              <circle cx="24" cy="8" r="3" stroke="var(--terra)" stroke-width="0.5"/>
+              <path d="M22 8h4M24 6v4" stroke="var(--terra)" stroke-width="0.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="s2-p-title">Proprietary Scan Data<br>& Beauty Profile</h3>
+          <p class="s2-p-body">
+            Personal insights of our customers — built from 300K+ annual Skincredible scans,
+            Beauty Pass purchase history, and Cast Member session notes.
+          </p>
+          <div class="s2-p-stat">300K<span style="font-size:0.5em;font-weight:300;color:var(--ink-3);vertical-align:super;">+</span></div>
+          <div class="s2-p-stat-note">Annual customers scanned</div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="s2-pillar">
+          <div class="s2-p-idx">// 02</div>
+          <div class="s2-p-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="10" cy="12" r="5" stroke="var(--ink)" stroke-width="0.5"/>
+              <circle cx="22" cy="12" r="5" stroke="var(--ink)" stroke-width="0.5"/>
+              <path d="M2 28c0-4.418 3.582-8 8-8" stroke="var(--ink)" stroke-width="0.5" stroke-linecap="round"/>
+              <path d="M22 20c4.418 0 8 3.582 8 8" stroke="var(--ink)" stroke-width="0.5" stroke-linecap="round"/>
+              <line x1="13" y1="20" x2="19" y2="20" stroke="var(--ink)" stroke-width="0.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="s2-p-title">The Largest<br>Community</h3>
+          <p class="s2-p-body">
+            Beauty Advisors and Customer Reviews — the most trusted combination in the category.
+            Cast Members are trained experts, not influencers.
+          </p>
+          <div class="s2-p-stat">1500<span style="font-size:0.5em;font-weight:300;color:var(--ink-3);vertical-align:super;">+</span></div>
+          <div class="s2-p-stat-note">Beauty Advisors across SEA</div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="s2-pillar">
+          <div class="s2-p-idx">// 03</div>
+          <div class="s2-p-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M16 4l2.5 7.5H26l-6.5 4.5 2.5 7.5L16 19l-6 4.5 2.5-7.5L6 11.5h7.5z" stroke="var(--ink)" stroke-width="0.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="s2-p-title">Trustworthy<br>for Beauty</h3>
+          <p class="s2-p-body">
+            Unlike ChatGPT or Gemini — Sephora's recommendations carry category authority,
+            commercial accountability, and a 25-year brand trust. Beauty trust is earned, not prompted.
+          </p>
+          <div class="s2-p-stat">6000<span style="font-size:0.5em;font-weight:300;color:var(--ink-3);vertical-align:super;">+</span></div>
+          <div class="s2-p-stat-note">Active SKUs across SEA</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 3 — DEMO JOURNEY
+    ════════════════════════════════════════════ -->
+    <section class="slide" id="s3" data-idx="2" role="region" aria-label="The Demo">
+
+      <div class="slide-label">// 02 &mdash; Demo: Sephora App</div>
+
+      <h2 class="s3-headline">Demo: Sephora App</h2>
+      <p class="s3-sub">From the morning brief to the post-visit loop — one intelligent thread.</p>
+
+      <!-- 4-step journey flow -->
+      <div class="journey-flow">
+        <div class="journey-steps">
+
+          <div class="j-step">
+            <div class="j-dot-row">
+              <div class="j-dot"><span class="j-num">01</span></div>
+              <div class="j-arrow"></div>
+            </div>
+            <h3 class="j-title">Nudge about changes</h3>
+            <p class="j-desc">
+              Proactively alerts the customer before they feel the problem —
+              humidity, season change, skin signal.
+            </p>
+            <span class="j-signal">proactive · real-time</span>
+          </div>
+
+          <div class="j-step">
+            <div class="j-dot-row">
+              <div class="j-dot"><span class="j-num">02</span></div>
+              <div class="j-arrow"></div>
+            </div>
+            <h3 class="j-title">Daily Brief in App</h3>
+            <p class="j-desc">
+              A personalised morning brief: 3 products, one reason each,
+              built from your Beauty Profile. Not a feed — a brief.
+            </p>
+            <span class="j-signal">daily · personalised</span>
+          </div>
+
+          <div class="j-step">
+            <div class="j-dot-row">
+              <div class="j-dot"><span class="j-num">03</span></div>
+              <div class="j-arrow"></div>
+            </div>
+            <h3 class="j-title">External signals<br>& customer events</h3>
+            <p class="j-desc">
+              Weather, UV, upcoming occasions, birthdays —
+              all factored in silently, in real time.
+            </p>
+            <span class="j-signal">contextual · live signals</span>
+          </div>
+
+          <div class="j-step">
+            <div class="j-dot-row">
+              <div class="j-dot"><span class="j-num">04</span></div>
+            </div>
+            <h3 class="j-title">Beauty Profile powers<br>recommendations</h3>
+            <p class="j-desc">
+              Scan history + Cast Member notes + Beauty Pass data —
+              the recommendation is grounded, not guessed.
+            </p>
+            <span class="j-signal">profile-powered · grounded</span>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 4 — SENSE / THINK / ACT
+    ════════════════════════════════════════════ -->
+    <section class="slide" id="s4" data-idx="3" role="region" aria-label="How We Do It">
+
+      <div class="slide-label">// 03 &mdash; How SNOW WHITE works</div>
+
+      <div style="display:grid; grid-template-columns:1fr auto; gap:28px; align-items:center; margin-bottom:0;">
+        <div>
+          <h2 class="s4-headline">Sense. Think. Act.</h2>
+          <p class="s4-sub">Three layers. One continuous intelligence loop.</p>
+        </div>
+        <div style="flex-shrink:0;">
+          <img
+            src="Apple Home.png"
+            style="max-height:21.6vh; max-width:26.4vw; width:auto; height:auto; object-fit:contain; display:block;"
+            alt="Apple Home — Snow White integration"
+            onerror="this.style.display='none'"
+          />
+        </div>
+      </div>
+
+      <div class="sta-grid">
+
+        <!-- SENSE -->
+        <div class="sta-col">
+          <div class="sta-col-head">
+            <div class="sta-col-name">Sense</div>
+            <div class="sta-col-role">// what the platform listens to</div>
+          </div>
+          <div class="sta-items">
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Beauty Scan Data</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Beauty Profile filled</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Purchase History</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Environmental Signals</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Loyalty Offers</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Calendar Events</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Fitness Tracking</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- connector -->
+        <div class="sta-connector">
+          <span class="sta-arrow-symbol">→</span>
+        </div>
+
+        <!-- THINK -->
+        <div class="sta-col">
+          <div class="sta-col-head">
+            <div class="sta-col-name">Think</div>
+            <div class="sta-col-role">// what the platform reasons over</div>
+          </div>
+          <div class="sta-items">
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">BHAGWAN Agent</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Skin State Agent</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Environment Agent</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Loyalty Agent</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Commerce Agent</span>
+            </div>
+            <div class="sta-item hl">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Fitness Agent</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- connector -->
+        <div class="sta-connector">
+          <span class="sta-arrow-symbol">→</span>
+        </div>
+
+        <!-- ACT -->
+        <div class="sta-col">
+          <div class="sta-col-head">
+            <div class="sta-col-name">Act</div>
+            <div class="sta-col-role">// where intelligence becomes experience</div>
+          </div>
+          <div class="sta-items">
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Daily Brief App</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">BA App Insights</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">WhatsApp / Line Nudges</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Apple Home</span>
+            </div>
+            <div class="sta-item">
+              <span class="sta-dash">—</span>
+              <span class="sta-item-text">Post-event Feedback</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sta-grid -->
+
+      <!-- ON-TRIGGER ROUTING ───────────────────────── -->
+      <div class="routing-section">
+        <div class="routing-label">// on-trigger routing · agents activate on event, never always-on</div>
+
+        <div class="routing-grid">
+
+          <!-- TRIGGERS (left) -->
+          <div>
+            <div class="r-col-name">Triggers</div>
+            <div class="r-trigger-list">
+              <div class="r-trigger"><span class="r-tag">sched</span>schedule.morning_brief</div>
+              <div class="r-trigger"><span class="r-tag">event</span>event.scan_complete</div>
+              <div class="r-trigger"><span class="r-tag">event</span>event.cast_session_booked</div>
+              <div class="r-trigger"><span class="r-tag">event</span>event.purchase</div>
+              <div class="r-trigger"><span class="r-tag">signal</span>signal.weather_change (&gt;10%)</div>
+              <div class="r-trigger"><span class="r-tag">timer</span>timer.inactivity_30d</div>
+            </div>
+          </div>
+
+          <!-- arrow -->
+          <div class="r-connector">→</div>
+
+          <!-- ROUTER (centre) -->
+          <div>
+            <div class="r-col-name">Router</div>
+            <div class="r-router-box">
+              <div class="r-router-head">Decision criteria</div>
+              <div class="r-router-criteria">
+                · trigger_type<br>
+                · profile_depth<br>
+                · token_estimate<br>
+                · last_interaction
+              </div>
+            </div>
+          </div>
+
+          <!-- arrow -->
+          <div class="r-connector">→</div>
+
+          <!-- MODEL TIERS (right) -->
+          <div>
+            <div class="r-col-name">Model tier</div>
+            <div class="r-tier-list">
+              <div class="r-tier-row">
+                <div class="tier-badge a">A</div>
+                <div>
+                  <div class="r-tier-model">Free · deterministic code + open APIs</div>
+                  <div class="r-tier-use">Daily briefs · signal nudges · purchase alerts · re-engagement</div>
+                </div>
+                <div>
+                  <div class="r-tier-vol">80% of calls</div>
+                  <div class="r-tier-price" style="color:var(--ink-3);">$0</div>
+                </div>
+              </div>
+              <div class="r-tier-row">
+                <div class="tier-badge b">B</div>
+                <div>
+                  <div class="r-tier-model">Gemini 3 Pro</div>
+                  <div class="r-tier-use">MAS — first-time recommendation generation per customer</div>
+                </div>
+                <div>
+                  <div class="r-tier-vol">10% of calls</div>
+                  <div class="r-tier-price">$1.25 / $10.00 per 1M</div>
+                </div>
+              </div>
+              <div class="r-tier-row">
+                <div class="tier-badge c">C</div>
+                <div>
+                  <div class="r-tier-model">Gemini 3 Flash</div>
+                  <div class="r-tier-use">Review signal updates on cached recommendations</div>
+                </div>
+                <div>
+                  <div class="r-tier-vol">10% of calls</div>
+                  <div class="r-tier-price">$0.15 / $0.60 per 1M</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /routing-grid -->
+      </div><!-- /routing-section -->
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 5 — IMPACT
+    ════════════════════════════════════════════ -->
+    <section class="slide" id="s5" data-idx="4" role="region" aria-label="Revenue Impact">
+
+      <div class="slide-label">// 04 &mdash; Revenue &amp; CLV Impact</div>
+
+      <h2 class="s5-headline">The numbers. Honestly.</h2>
+      <p class="s5-sub">Modelled for current Beauty Pass Members · 6 markets · EUR · Edenred CRM FY25</p>
+
+      <div class="s5-grid">
+
+        <!-- LEFT: ARPU Uplift + Incremental Revenue -->
+        <div class="s5-left">
+
+          <div class="arpu-bars" style="margin-bottom:20px;">
+            <div class="arpu-row">
+              <span class="arpu-period" style="width:110px; font-size:10px; font-weight:600; color:var(--ink);">Baseline ARPU</span>
+              <div class="arpu-track"><div class="arpu-fill" style="width:62%"></div></div>
+              <span class="arpu-val" style="width:52px;">€157</span>
+            </div>
+            <div class="arpu-row">
+              <span class="arpu-period" style="width:110px; font-size:10px; font-weight:600; color:var(--ink);">Engaged ARPU</span>
+              <div class="arpu-track"><div class="arpu-fill hi" style="width:68%"></div></div>
+              <span class="arpu-val" style="width:52px; color:var(--terra);">€173</span>
+            </div>
+          </div>
+
+          <div style="border: 1px dashed var(--terra-20); padding:16px 20px; margin-bottom:28px; text-align:center;">
+            <div style="font-family:var(--sans); font-size:clamp(18px,2vw,26px); font-weight:700; color:var(--terra); letter-spacing:0.02em; margin-bottom:6px;">+10% ARPU Uplift</div>
+            <div style="font-family:var(--sans); font-size:12px; font-weight:300; color:var(--ink-3);">+€16 per engaged user · contextual upselling through daily brief</div>
+          </div>
+
+          <div class="clv-title">Expected Incremental Revenue · SEA at scale</div>
+
+          <div style="border:0.5px solid var(--line); padding:20px 20px 16px; margin-bottom:28px;">
+            <div class="rn-label">Annual Incremental Revenue</div>
+            <div class="rn-fig terra" style="margin-bottom:6px;">~€11M</div>
+            <div class="rn-note">720K engaged users × €16 ARPU uplift · 6 markets full-year</div>
+          </div>
+
+          <div class="s5-note-block" style="padding:0; border:none;">
+            <div class="s5-note-head">Assumptions</div>
+            <div class="s5-note-body">
+              <strong>1.2M</strong> app MAU · 6 markets<br>
+              <strong>60%</strong> feature engagement rate → 720K active feature users<br>
+              <strong>+€16</strong> ARPU uplift for engaged cohort vs. baseline<br>
+              <strong>€157</strong> blended baseline (Retained €212 · Recruited €95)<br>
+              Source: Edenred CRM FY25
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Cost Model only -->
+        <div class="s5-right">
+
+          <div class="clv-title">AI cost · SEA at scale · 6 markets · 1.2M app users</div>
+
+          <div class="cost-tier-rows">
+            <div class="cost-tier-row">
+              <div class="ctr-badge a">A</div>
+              <div>
+                <div class="ctr-model">Free · deterministic code + open APIs</div>
+                <div class="ctr-use">Daily briefs · signal nudges · purchase alerts · re-engagement</div>
+              </div>
+              <div class="ctr-vol">80% of calls</div>
+              <div class="ctr-price" style="color:var(--ink-3);">$0</div>
+            </div>
+            <div class="cost-tier-row">
+              <div class="ctr-badge b">B</div>
+              <div>
+                <div class="ctr-model">Gemini 3 Pro</div>
+                <div class="ctr-use">MAS — first-time recommendation generation per customer</div>
+              </div>
+              <div class="ctr-vol">10% of calls</div>
+              <div class="ctr-price">~$20K/yr</div>
+            </div>
+            <div class="cost-tier-row">
+              <div class="ctr-badge c">C</div>
+              <div>
+                <div class="ctr-model">Gemini 3 Flash</div>
+                <div class="ctr-use">Review signal updates on cached recommendations</div>
+              </div>
+              <div class="ctr-vol">10% of calls</div>
+              <div class="ctr-price">~$0.4K/yr</div>
+            </div>
+          </div>
+
+          <div class="cost-yr-grid">
+            <div class="cost-yr-col">
+              <div class="cost-yr-label">AI Compute (B + C)</div>
+              <div class="cost-yr-fig">~$20K</div>
+              <div class="cost-yr-note">1.1M Pro calls<br>1.1M Flash calls</div>
+            </div>
+            <div class="cost-yr-col">
+              <div class="cost-yr-label">Platform Infra</div>
+              <div class="cost-yr-fig">~$15K</div>
+              <div class="cost-yr-note">Vertex AI · Pub/Sub<br>Firestore · Vector Search</div>
+            </div>
+            <div class="cost-yr-col">
+              <div class="cost-yr-label">Annual Total · SEA</div>
+              <div class="cost-yr-fig terra">~$35K</div>
+              <div class="cost-yr-note">~0.3% of SEA annual<br>incremental revenue</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /slider-track -->
+</div><!-- /slider-outer -->
+
+<!-- ═══════════════════════════════════════════
+     NAVIGATION BAR
+════════════════════════════════════════════ -->
+<nav class="slider-nav" role="navigation" aria-label="Slide navigation">
+  <button class="snav-btn" id="btn-prev" aria-label="Previous slide">← Back</button>
+
+  <div class="snav-mid">
+    <div class="snav-dots" id="dots-wrap" role="tablist"></div>
+    <div class="snav-count" id="counter">01 / 05</div>
+  </div>
+
+  <button class="snav-btn" id="btn-next" aria-label="Next slide">Next →</button>
+</nav>
+
+<script>
+(function () {
+  var total   = 5;
+  var current = 0;
+  var track   = document.getElementById('track');
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+  var dotsWrap = document.getElementById('dots-wrap');
+  var counter  = document.getElementById('counter');
+
+  var slideLabels = [
+    'The Problem',
+    'Why Sephora',
+    'The Demo',
+    'How It Works',
+    'Impact'
+  ];
+
+  /* Build dots */
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('button');
+    d.className = 'snav-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('role', 'tab');
+    d.setAttribute('aria-label', slideLabels[i]);
+    d.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    d.dataset.idx = i;
+    d.addEventListener('click', function () { goTo(parseInt(this.dataset.idx)); });
+    dotsWrap.appendChild(d);
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function goTo(n) {
+    current = Math.max(0, Math.min(n, total - 1));
+    track.style.transform = 'translateX(-' + (current * 20) + '%)';
+
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+
+    counter.textContent = pad(current + 1) + ' / ' + pad(total);
+
+    var dots = dotsWrap.querySelectorAll('.snav-dot');
+    dots.forEach(function (dot, idx) {
+      dot.classList.toggle('active', idx === current);
+      dot.setAttribute('aria-selected', idx === current ? 'true' : 'false');
+    });
+
+    /* Update URL hash for sharing/bookmarking */
+    history.replaceState(null, '', '#' + (current + 1));
+  }
+
+  btnPrev.addEventListener('click', function () { goTo(current - 1); });
+  btnNext.addEventListener('click', function () { goTo(current + 1); });
+
+  /* Keyboard navigation */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); goTo(current - 1);
+    }
+  });
+
+  /* Touch / swipe support */
+  var touchStartX = 0;
+  var outerEl = document.getElementById('slider-outer');
+
+  outerEl.addEventListener('touchstart', function (e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  outerEl.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(dx) > 48) {
+      if (dx < 0) goTo(current + 1);
+      else         goTo(current - 1);
+    }
+  }, { passive: true });
+
+  /* Init from hash */
+  var hash = parseInt(window.location.hash.replace('#', ''));
+  if (hash >= 1 && hash <= total) {
+    goTo(hash - 1);
+  } else {
+    goTo(0);
+  }
+})();
+</script>
+</body>
+</html>
