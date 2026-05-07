@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/", "destination": "/snow-white-pitch-canvas.html" }]
+}
